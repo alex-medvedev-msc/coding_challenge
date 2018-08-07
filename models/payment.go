@@ -41,3 +41,21 @@ func (p *Payment) Validate() error {
 
 	return nil
 }
+
+func NewIncomingPayment(from, to string, amount decimal.Decimal) *Payment {
+	return &Payment{
+		Account: to,
+		FromAccount: from,
+		Direction: DirectionIn,
+		Amount: amount,
+	}
+}
+
+func NewOutgoingPayment(from, to string, amount decimal.Decimal) *Payment {
+	return &Payment{
+		Account: from,
+		ToAccount: to,
+		Direction: DirectionOut,
+		Amount: amount,
+	}
+}

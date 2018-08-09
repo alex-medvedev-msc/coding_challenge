@@ -5,14 +5,17 @@ import (
 	"github.com/messwith/coding_challenge/models"
 )
 
+// AccountRepository is essentially set of methods for working with accounts in db
 type AccountRepository struct {
 	db *sql.DB
 }
 
+// NewAccountRepository creates ready to use account repository
 func NewAccountRepository(db *sql.DB) *AccountRepository {
 	return &AccountRepository{db: db}
 }
 
+// GetAccounts loads all accounts from db without pagination
 func (ar *AccountRepository) GetAccounts() ([]models.Account, error) {
 
 	accounts := []models.Account{}

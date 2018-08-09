@@ -9,3 +9,4 @@ type PaymentRepository struct {
 func NewPaymentRepository(db *sql.DB) *PaymentRepository {
 	return &PaymentRepository{db: db}
 }
+

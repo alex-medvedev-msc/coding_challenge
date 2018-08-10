@@ -23,5 +23,6 @@ func NewServer(accountRep *repository.AccountRepository, paymentRep *repository.
 
 // Run runs the server at the specified port and blocks forever if there is no start error
 func (s *Server) Run(port int) error {
-
+	s.logger.Println("Test run on port ", port)
+	return nil
 }

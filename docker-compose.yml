@@ -1,0 +1,15 @@
+version: '2'
+
+volumes:
+  pgdata:
+
+services:
+
+  postgres:
+    build: postgres
+    volumes:
+    - pgdata:/var/lib/postgresql/data
+
+  api:
+    build: .
+

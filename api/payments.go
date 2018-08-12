@@ -79,11 +79,12 @@ func (s *Server) CreatePayment(c *gin.Context) {
 	}
 	receiver.Balance = receiver.Balance.Add(pr.Amount)
 
-	if err := s.paymentRep.CreatePayment(tx, incomingPayment); err != nil {
+	if err := s.paymentRep.CreatePayment(tx, outgoingPayment); err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
-	if err := s.paymentRep.CreatePayment(tx, outgoingPayment); err != nil {
+	
+	if err := s.paymentRep.CreatePayment(tx, incomingPayment); err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}

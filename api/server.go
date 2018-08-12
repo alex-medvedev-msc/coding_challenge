@@ -23,7 +23,7 @@ func NewServer(accountRep *repository.AccountRepository, paymentRep *repository.
 		accountRep: accountRep,
 		paymentRep: paymentRep,
 	}
-	router := gin.New()
+	router := gin.Default()
 	router.GET("/accounts", server.GetAccounts)
 	router.GET("/payments", server.GetPayments)
 	router.POST("/payments", server.CreatePayment)

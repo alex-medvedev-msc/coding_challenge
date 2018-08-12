@@ -33,7 +33,7 @@ func (pr *PaymentRepository) GetPayments() ([]models.Payment, error) {
 
 	payments := []models.Payment{}
 
-	rows, err := pr.db.Query(`SELECT account, to_account, from_account, direction, amount from payments`)
+	rows, err := pr.db.Query(`SELECT account, to_account, from_account, direction, amount from payments ORDER BY id`)
 	if err == sql.ErrNoRows {
 		return payments, err
 	}

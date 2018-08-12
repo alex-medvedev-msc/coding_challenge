@@ -3,6 +3,7 @@ package repository
 import (
 	"database/sql"
 	"github.com/messwith/coding_challenge/models"
+	"github.com/shopspring/decimal"
 )
 
 // AccountRepository is essentially set of methods for working with accounts in db
@@ -40,4 +41,18 @@ func (ar *AccountRepository) GetAccounts() ([]models.Account, error) {
 	return accounts, nil
 }
 
+// LockAccount locks specified account for updating its balance later
+func (ar *AccountRepository) LockAccount(accountID string) (models.Account, error) {
+	account := models.Account{}
+	err := ar.db.QueryRow(`SELECT id, owner, balance, currency FROM accounts 
+									WHERE account = $1 FOR UPDATE`, accountID).
+		Scan(&account.Id, &account.Owner, &account.Balance, &account.Currency)
+	return account, err
+}
+
+// UpdateAccountBalance updates balance of specified account
+func (ar *AccountRepository) UpdateAccountBalance(accountID string, newBalance decimal.Decimal) (error) {
+	_, err := ar.db.Exec(`UPDATE accounts SET balance = $1 WHERE id = $2`, newBalance, accountID)
+	return err
+}
 

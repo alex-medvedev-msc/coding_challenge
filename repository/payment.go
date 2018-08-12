@@ -15,6 +15,10 @@ func NewPaymentRepository(db *sql.DB) *PaymentRepository {
 	return &PaymentRepository{db: db}
 }
 
+func (pr *PaymentRepository) BeginTx() (*sql.Tx, error) {
+	return pr.db.Begin()
+}
+
 // CreatePayment creates new payment in db
 func (pr *PaymentRepository) CreatePayment(tx *sql.Tx, payment *models.Payment) error {
 

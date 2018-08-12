@@ -23,3 +23,4 @@ func DbConnect(connString string) (*sql.DB, error) {
 	}
 	return nil, errors.New("impossible error")
 }
+

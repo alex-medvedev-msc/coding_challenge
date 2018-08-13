@@ -1,0 +1,6 @@
+version: '2'
+
+services:
+  api:
+    image: hello-world
+    restart: "no"

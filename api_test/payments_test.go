@@ -44,6 +44,8 @@ func TestCreatePayment(t *testing.T) {
 	defer clearDB()
 	require.Nil(t, createAccount("1", decimal.NewFromFloat(0.5)))
 	require.Nil(t, createAccount("2", decimal.NewFromFloat(1.5)))
+
+	// simple happy case
 	pr := api.PaymentRequest{
 		Amount: decimal.NewFromFloat(0.1),
 		FromAccount: "1",
@@ -66,6 +68,7 @@ func TestCreatePayment(t *testing.T) {
 	assert.Equal(t, payments[0].Account, pr.FromAccount)
 	assert.Equal(t, payments[1].Account, pr.ToAccount)
 
+	// check if we can completely drain account balance
 	pr.Amount = decimal.NewFromFloat(0.4)
 	require.Nil(t, request("POST", "/payments", pr, nil))
 
@@ -78,6 +81,8 @@ func TestCreatePaymentWrong(t *testing.T) {
 	defer clearDB()
 	require.Nil(t, createAccount("1", decimal.NewFromFloat(0.5)))
 	require.Nil(t, createAccount("2", decimal.NewFromFloat(1.5)))
+
+	// payment with zero amount is not allowed
 	pr := api.PaymentRequest{
 		Amount: decimal.NewFromFloat(0),
 		FromAccount: "1",
@@ -85,21 +90,23 @@ func TestCreatePaymentWrong(t *testing.T) {
 	}
 	require.NotNil(t, request("POST", "/payments", pr, nil))
 
+	// trying to send more than we can
 	pr.Amount = decimal.NewFromFloat(1)
 	require.NotNil(t, request("POST", "/payments", pr, nil))
 
+	// trying to send negative amount
 	pr.Amount = decimal.NewFromFloat(-1)
 	require.NotNil(t, request("POST", "/payments", pr, nil))
 
+	// checking system precision
 	pr.Amount, _ = decimal.NewFromString("0.50000000000001")
 	require.NotNil(t, request("POST", "/payments", pr, nil))
 
-
+	// balance of accounts must be intact after test
 	var accounts []models.Account
 	require.Nil(t, request("GET", "/accounts", nil, &accounts))
 	assert.True(t, accounts[0].Balance.Equal(decimal.NewFromFloat(0.5)))
 	assert.True(t, accounts[1].Balance.Equal(decimal.NewFromFloat(1.5)))
-
 }
 
 

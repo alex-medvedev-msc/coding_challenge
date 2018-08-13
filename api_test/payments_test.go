@@ -7,6 +7,8 @@ import (
 	"github.com/shopspring/decimal"
 	"github.com/messwith/coding_challenge/models"
 	"github.com/stretchr/testify/assert"
+	"strconv"
+	"math/rand"
 )
 
 func TestGetPayments(t *testing.T) {
@@ -109,5 +111,26 @@ func TestCreatePaymentWrong(t *testing.T) {
 	assert.True(t, accounts[1].Balance.Equal(decimal.NewFromFloat(1.5)))
 }
 
+func BenchmarkCreatePaymentParallel(b *testing.B) {
+	defer clearDB()
+	require.Nil(b, createAccount("1", decimal.NewFromFloat(10000)))
+	require.Nil(b, createAccount("2", decimal.NewFromFloat(10000)))
+	require.Nil(b, createAccount("3", decimal.NewFromFloat(10000)))
 
-
+	b.ResetTimer()
+	b.RunParallel(func(pb *testing.PB) {
+		for pb.Next() {
+			from := rand.Intn(3)+1
+			to := from -1
+			if to < 1 {
+				to = 3
+			}
+			pr := api.PaymentRequest{
+				Amount: decimal.NewFromFloat(0.01),
+				FromAccount: strconv.Itoa(from),
+				ToAccount: strconv.Itoa(to),
+			}
+			assert.Nil(b, request("POST", "/payments", pr, nil))
+		}
+	})
+}

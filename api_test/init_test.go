@@ -67,6 +67,19 @@ func createRandomAccount(id string) error {
 	return err
 }
 
+func createAccount(id string, balance decimal.Decimal) error {
+	account := models.Account{
+		Id: id,
+		Owner: "test",
+		Balance: balance,
+		Currency: "PHP",
+	}
+	_, err := db.Exec(`INSERT INTO accounts (id, owner, balance, currency) VALUES (
+					$1, $2, $3, $4	
+					)`, account.Id, account.Owner, account.Balance, account.Currency)
+	return err
+}
+
 func createRandomAccounts(count int) error {
 	for i := 0; i < count; i++ {
 		if err := createRandomAccount(strconv.Itoa(i+1)); err != nil {

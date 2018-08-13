@@ -83,7 +83,7 @@ func (s *Server) CreatePayment(c *gin.Context) {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
-	
+
 	if err := s.paymentRep.CreatePayment(tx, incomingPayment); err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return

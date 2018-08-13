@@ -5,6 +5,8 @@ import (
 	"errors"
 )
 
+// Payment holds information about moving funds from one account to other
+// There is always two matching payments in opposite direction for each transaction
 type Payment struct {
 	Account string `json:"account"`
 	ToAccount string `json:"to_account"`
@@ -14,7 +16,9 @@ type Payment struct {
 }
 
 const (
+	// DirectionIn means that payment is incoming for payment owner account
 	DirectionIn = "ingoing"
+	// DirectionOut means that payment is outgoing for payment owner account
 	DirectionOut = "outgoing"
 )
 
@@ -42,6 +46,7 @@ func (p *Payment) Validate() error {
 	return nil
 }
 
+// NewIncomingPayment creates new payment with direction = DirectionIn and owner = to
 func NewIncomingPayment(from, to string, amount decimal.Decimal) *Payment {
 	return &Payment{
 		Account: to,
@@ -51,6 +56,7 @@ func NewIncomingPayment(from, to string, amount decimal.Decimal) *Payment {
 	}
 }
 
+// NewOutgoingPayment creates new payment with direction = DirectionOut and owner = from
 func NewOutgoingPayment(from, to string, amount decimal.Decimal) *Payment {
 	return &Payment{
 		Account: from,

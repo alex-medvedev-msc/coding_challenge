@@ -56,27 +56,27 @@ func TestMain(m *testing.M) {
 
 func createRandomAccount(id string) error {
 	account := models.Account{
-		Id: id,
-		Owner: "test",
-		Balance: decimal.NewFromFloat(rand.Float64()*10),
+		ID:       id,
+		Owner:    "test",
+		Balance:  decimal.NewFromFloat(rand.Float64()*10),
 		Currency: "PHP",
 	}
 	_, err := db.Exec(`INSERT INTO accounts (id, owner, balance, currency) VALUES (
 					$1, $2, $3, $4	
-					)`, account.Id, account.Owner, account.Balance, account.Currency)
+					)`, account.ID, account.Owner, account.Balance, account.Currency)
 	return err
 }
 
 func createAccount(id string, balance decimal.Decimal) error {
 	account := models.Account{
-		Id: id,
-		Owner: "test",
-		Balance: balance,
+		ID:       id,
+		Owner:    "test",
+		Balance:  balance,
 		Currency: "PHP",
 	}
 	_, err := db.Exec(`INSERT INTO accounts (id, owner, balance, currency) VALUES (
 					$1, $2, $3, $4	
-					)`, account.Id, account.Owner, account.Balance, account.Currency)
+					)`, account.ID, account.Owner, account.Balance, account.Currency)
 	return err
 }
 

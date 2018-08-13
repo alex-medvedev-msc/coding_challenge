@@ -32,7 +32,7 @@ func (ar *AccountRepository) GetAccounts() ([]models.Account, error) {
 
 	for rows.Next() {
 		account := models.Account{}
-		err = rows.Scan(&account.Id, &account.Owner, &account.Balance, &account.Currency)
+		err = rows.Scan(&account.ID, &account.Owner, &account.Balance, &account.Currency)
 		if err != nil {
 			return nil, err
 		}
@@ -46,7 +46,7 @@ func (ar *AccountRepository) LockAccount(accountID string) (models.Account, erro
 	account := models.Account{}
 	err := ar.db.QueryRow(`SELECT id, owner, balance, currency FROM accounts 
 									WHERE id = $1 FOR UPDATE`, accountID).
-		Scan(&account.Id, &account.Owner, &account.Balance, &account.Currency)
+		Scan(&account.ID, &account.Owner, &account.Balance, &account.Currency)
 	return account, err
 }
 

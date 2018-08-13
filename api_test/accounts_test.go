@@ -12,7 +12,7 @@ func TestGetAccounts(t *testing.T) {
 	var accounts []models.Account
 	require.Nil(t, request("GET", "/accounts", nil, &accounts))
 	require.Len(t, accounts, 100)
-	require.Equal(t, accounts[0].Id, "1")
+	require.Equal(t, accounts[0].ID, "1")
 }
 
 func TestGetAccountsEmpty(t *testing.T) {

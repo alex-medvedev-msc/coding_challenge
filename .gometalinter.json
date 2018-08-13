@@ -1,0 +1,17 @@
+{
+  "Fast": true,
+  "Vendor": true,
+  "EnableAll": true,
+  "Disable": [
+    "gotype",
+    "gotypex"
+  ],
+  "Exclude": [
+    "Errors unhandled",
+    "should have comment or be unexported",
+    "should have comment (or a comment on this block) or be unexported"
+  ],
+  "Aggregate": true,
+  "Cyclo": 15,
+  "LineLength": 120
+}

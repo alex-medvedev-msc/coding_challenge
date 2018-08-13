@@ -15,6 +15,9 @@ func NewPaymentRepository(db *sql.DB) *PaymentRepository {
 	return &PaymentRepository{db: db}
 }
 
+// BeginTx starts transaction in db
+// Several calls of PaymentRepository and AccountRepository methods must be made in same transaction
+// because we need row locking for updating account balance
 func (pr *PaymentRepository) BeginTx() (*sql.Tx, error) {
 	return pr.db.Begin()
 }

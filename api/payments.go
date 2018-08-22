@@ -49,11 +49,11 @@ func (s *Server) createPayments(tx *sql.Tx, incoming, outgoing *models.Payment) 
 }
 
 func (s *Server) updateAccountBalances(tx *sql.Tx, sender *models.Account, receiver *models.Account) error {
-	if err := s.accountRep.UpdateAccountBalance(sender.ID, sender.Balance); err != nil {
+	if err := s.accountRep.UpdateAccountBalance(tx, sender.ID, sender.Balance); err != nil {
 		return err
 	}
 
-	if err := s.accountRep.UpdateAccountBalance(receiver.ID, receiver.Balance); err != nil {
+	if err := s.accountRep.UpdateAccountBalance(tx, receiver.ID, receiver.Balance); err != nil {
 		return err
 	}
 	return nil
@@ -82,7 +82,7 @@ func (s *Server) CreatePayment(c *gin.Context) {
 	}
 	defer tx.Rollback()
 
-	sender, err := s.accountRep.LockAccount(pr.FromAccount)
+	sender, err := s.accountRep.LockAccount(tx, pr.FromAccount)
 	if err == sql.ErrNoRows{
 		c.AbortWithError(http.StatusNotFound, err)
 		return
@@ -96,7 +96,7 @@ func (s *Server) CreatePayment(c *gin.Context) {
 		return
 	}
 
-	receiver, err := s.accountRep.LockAccount(pr.ToAccount)
+	receiver, err := s.accountRep.LockAccount(tx, pr.ToAccount)
 	if err == sql.ErrNoRows{
 		c.AbortWithError(http.StatusNotFound, err)
 		return

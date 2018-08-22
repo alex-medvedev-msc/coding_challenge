@@ -42,17 +42,17 @@ func (ar *AccountRepository) GetAccounts() ([]models.Account, error) {
 }
 
 // LockAccount locks specified account for updating its balance later
-func (ar *AccountRepository) LockAccount(accountID string) (models.Account, error) {
+func (ar *AccountRepository) LockAccount(tx *sql.Tx, accountID string) (models.Account, error) {
 	account := models.Account{}
-	err := ar.db.QueryRow(`SELECT id, owner, balance, currency FROM accounts 
+	err := tx.QueryRow(`SELECT id, owner, balance, currency FROM accounts 
 									WHERE id = $1 FOR UPDATE`, accountID).
 		Scan(&account.ID, &account.Owner, &account.Balance, &account.Currency)
 	return account, err
 }
 
 // UpdateAccountBalance updates balance of specified account
-func (ar *AccountRepository) UpdateAccountBalance(accountID string, newBalance decimal.Decimal) (error) {
-	_, err := ar.db.Exec(`UPDATE accounts SET balance = $1 WHERE id = $2`, newBalance, accountID)
+func (ar *AccountRepository) UpdateAccountBalance(tx *sql.Tx, accountID string, newBalance decimal.Decimal) (error) {
+	_, err := tx.Exec(`UPDATE accounts SET balance = $1 WHERE id = $2`, newBalance, accountID)
 	return err
 }
 

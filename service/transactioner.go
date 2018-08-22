@@ -42,7 +42,7 @@ func (t *SqlTransactioner) Do(incoming *models.Payment, outgoing *models.Payment
 	defer tx.Rollback()
 
 	// locking sender balance for update
-	sender, err := t.accountRep.LockAccount(tx, incoming.FromAccount)
+	sender, receiver, err := t.accountRep.LockAccounts(tx, incoming.FromAccount, outgoing.ToAccount)
 	if err == sql.ErrNoRows{
 		return errors.NewAccountNotFoundError(incoming.FromAccount)
 	} else if err != nil {
@@ -53,14 +53,6 @@ func (t *SqlTransactioner) Do(incoming *models.Payment, outgoing *models.Payment
 	sender.Balance = sender.Balance.Sub(incoming.Amount)
 	if sender.Balance.Cmp(decimal.Zero) == -1 {
 		return errors.NewDataError("sender has unsufficient funds for this payment")
-	}
-
-	// locking receiver for update
-	receiver, err := t.accountRep.LockAccount(tx, outgoing.ToAccount)
-	if err == sql.ErrNoRows{
-		return errors.NewAccountNotFoundError(incoming.FromAccount)
-	} else if err != nil {
-		return errors.NewInternalError(err)
 	}
 
 	// we do not support other currencies
@@ -75,7 +67,7 @@ func (t *SqlTransactioner) Do(incoming *models.Payment, outgoing *models.Payment
 	}
 
 	// finally, updating account balances
-	if err := t.updateAccountBalances(tx, &sender, &receiver); err != nil {
+	if err := t.updateAccountBalances(tx, sender, receiver); err != nil {
 		return err
 	}
 

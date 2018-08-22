@@ -41,13 +41,33 @@ func (ar *AccountRepository) GetAccounts() ([]models.Account, error) {
 	return accounts, nil
 }
 
-// LockAccount locks specified account for updating its balance later
-func (ar *AccountRepository) LockAccount(tx *sql.Tx, accountID string) (models.Account, error) {
-	account := models.Account{}
-	err := tx.QueryRow(`SELECT id, owner, balance, currency FROM accounts 
-									WHERE id = $1 FOR UPDATE`, accountID).
-		Scan(&account.ID, &account.Owner, &account.Balance, &account.Currency)
-	return account, err
+// LockAccount locks specified accounts for updating its balance later
+func (ar *AccountRepository) LockAccounts(tx *sql.Tx, senderID, receiverID string) (*models.Account, *models.Account, error) {
+	rows, err := tx.Query(`SELECT id, owner, balance, currency FROM accounts 
+									WHERE id = $1 OR id = $2 FOR UPDATE`, senderID, receiverID)
+	if err != nil {
+		return nil, nil, err
+	}
+	defer rows.Close()
+	var sender, receiver *models.Account
+	for rows.Next() {
+		account := models.Account{}
+		if err := rows.Scan(&account.ID, &account.Owner, &account.Balance, &account.Currency); err != nil {
+			return nil, nil, err
+		}
+		if account.ID == senderID {
+			sender = &account
+		}
+		if account.ID == receiverID {
+			receiver = &account
+		}
+	}
+
+	if sender == nil || receiver == nil {
+		return nil, nil, sql.ErrNoRows
+	}
+
+	return sender, receiver, nil
 }
 
 // UpdateAccountBalance updates balance of specified account

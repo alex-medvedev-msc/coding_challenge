@@ -11,9 +11,9 @@ import (
 
 // GetPayments is an endpoint for getting all the payments in system without any filtering
 func (s *Server) GetPayments(c *gin.Context) {
-	payments, err := s.paymentRep.GetPayments()
+	payments, err := s.paymentService.GetPayments()
 	if err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
+		s.HandleServiceError(c, err)
 		return
 	}
 	c.JSON(http.StatusOK, payments)
@@ -54,14 +54,14 @@ func (s *Server) CreatePayment(c *gin.Context) {
 	}
 
 	if err := s.transactioner.Do(incomingPayment, outgoingPayment); err != nil {
-		s.HandleTransactionError(c, err)
+		s.HandleServiceError(c, err)
 		return
 	}
 
 	c.Status(http.StatusOK)
 }
 
-func (s *Server) HandleTransactionError(c *gin.Context, err error) {
+func (s *Server) HandleServiceError(c *gin.Context, err error) {
 	switch convertedErr := err.(type) {
 	case *errors.DataError:
 		c.AbortWithError(http.StatusConflict, convertedErr)

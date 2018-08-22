@@ -39,9 +39,10 @@ func main() {
 
 	accountRep := repository.NewAccountRepository(db)
 	paymentRep := repository.NewPaymentRepository(db)
-
+	accountService := service.NewSqlAccountService(accountRep)
+	paymentService := service.NewSqlPaymentService(paymentRep)
 	sqlTransactioner := service.NewSqlTransactioner(accountRep, paymentRep)
 
-	server := api.NewServer(sqlTransactioner, logger)
+	server := api.NewServer(sqlTransactioner, accountService, paymentService, logger)
 	log.Fatal(server.Run(cfg.Port))
 }

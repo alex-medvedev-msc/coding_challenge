@@ -13,13 +13,20 @@ type Server struct {
 	logger *log.Logger
 	router *gin.Engine
 	transactioner service.Transactioner
+	accountService service.AccountService
+	paymentService service.PaymentService
 }
 
 // NewServer creates ready to use server object with specified dependencies
-func NewServer(transactioner service.Transactioner, logger *log.Logger) *Server {
+func NewServer(transactioner service.Transactioner,
+	accountService service.AccountService,
+	paymentService service.PaymentService,
+	logger *log.Logger) *Server {
 	server := &Server{
 		logger: logger,
 		transactioner: transactioner,
+		accountService: accountService,
+		paymentService: paymentService,
 	}
 	router := gin.Default()
 	router.GET("/accounts", server.GetAccounts)

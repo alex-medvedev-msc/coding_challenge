@@ -19,6 +19,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"errors"
+	"github.com/messwith/coding_challenge/service"
 )
 
 type config struct {
@@ -49,7 +50,11 @@ func TestMain(m *testing.M) {
 	accountRep := repository.NewAccountRepository(db)
 	paymentRep := repository.NewPaymentRepository(db)
 
-	server := api.NewServer(accountRep, paymentRep, logger)
+	accountService := service.NewSqlAccountService(accountRep)
+	paymentService := service.NewSqlPaymentService(paymentRep)
+	sqlTransactioner := service.NewSqlTransactioner(accountRep, paymentRep)
+
+	server := api.NewServer(sqlTransactioner, accountService, paymentService, logger)
 	go server.Run(cfg.Port)
 	m.Run()
 }

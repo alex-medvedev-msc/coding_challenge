@@ -9,6 +9,7 @@ import (
 )
 
 // Transactioner is an interface which allows to abstract from details of storing payments in some storage
+// and of balances of accoutns
 type Transactioner interface {
 	Do(incoming *models.Payment, outgoing *models.Payment) error
 }

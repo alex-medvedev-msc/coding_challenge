@@ -1,27 +1,25 @@
 package api
 
 import (
-	"github.com/messwith/coding_challenge/repository"
 	"log"
 	"github.com/gin-gonic/gin"
 	"errors"
 	"fmt"
+	"github.com/messwith/coding_challenge/service"
 )
 
 // Server is an object which stores all dependencies for api methods
 type Server struct {
 	logger *log.Logger
-	accountRep *repository.AccountRepository
-	paymentRep *repository.PaymentRepository
 	router *gin.Engine
+	transactioner service.Transactioner
 }
 
 // NewServer creates ready to use server object with specified dependencies
-func NewServer(accountRep *repository.AccountRepository, paymentRep *repository.PaymentRepository, logger *log.Logger) *Server {
+func NewServer(transactioner service.Transactioner, logger *log.Logger) *Server {
 	server := &Server{
 		logger: logger,
-		accountRep: accountRep,
-		paymentRep: paymentRep,
+		transactioner: transactioner,
 	}
 	router := gin.Default()
 	router.GET("/accounts", server.GetAccounts)

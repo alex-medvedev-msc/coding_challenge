@@ -7,6 +7,7 @@ import (
 	"github.com/messwith/coding_challenge/repository"
 	"os"
 	"github.com/kelseyhightower/envconfig"
+	"github.com/messwith/coding_challenge/service"
 )
 
 type config struct {
@@ -39,6 +40,8 @@ func main() {
 	accountRep := repository.NewAccountRepository(db)
 	paymentRep := repository.NewPaymentRepository(db)
 
-	server := api.NewServer(accountRep, paymentRep, logger)
+	sqlTransactioner := service.NewSqlTransactioner(accountRep, paymentRep)
+
+	server := api.NewServer(sqlTransactioner, logger)
 	log.Fatal(server.Run(cfg.Port))
 }
